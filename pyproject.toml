@@ -1,0 +1,9 @@
+[project]
+name = "notification-prioritizer"
+version = "0.1.0"
+description = "OpenEnv Notification Prioritizer"
+dependencies = [
+    "fastapi",
+    "uvicorn",
+    "pydantic"
+]
