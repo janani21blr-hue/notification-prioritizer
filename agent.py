@@ -14,6 +14,7 @@ ACTIONS = ["notify", "delay", "ignore"]
 # STEP 1: Classify message importance
 # ============================================================
 def get_importance(obs):
+    
     message = obs.get("message", "").lower()
     sender  = obs.get("sender",  "").lower()
     app     = obs.get("app", obs.get("App", "")).lower()
@@ -25,18 +26,18 @@ def get_importance(obs):
         "security alert", "login attempt", "fraud"
     ]
     if any(k in message for k in critical_keywords):
-        return "critical"
+        return "high"
 
     # Mom/Dad calling via any app (WhatsApp calls count too)
     family_senders = ["mom", "dad", "amma", "appa", "mother", "father", "parents"]
     call_keywords  = ["calling you", "is calling", "call me", "called you"]
     if any(s in sender for s in family_senders) and \
        any(c in message for c in call_keywords):
-        return "critical"
+        return "high"
 
     # --- LOW (check before high, so Swiggy promo doesn't get bumped up) ---
     low_keywords = ["sale", "discount", "offer", "promo", "free", "deal",
-                    "30%", "off", "cashback", "coupon", "flat"]
+                    "30%", "off", "cashback", "coupon", "flat","%off"]
     if any(w in message for w in low_keywords):
         return "low"
 
@@ -53,7 +54,7 @@ def get_importance(obs):
         "assignment due", "due in", "shortlisted", "selected",
         "offer letter", "payment due", "verification", "internship",
         "job offer", "hall ticket", "admit card", "submission deadline",
-        "in 2 hours", "in 1 hour", "expires soon", "valid for"
+        "in 2 hours", "in 1 hour", "expires soon", "valid for","asap","immediately"
     ]
     if any(w in message for w in high_keywords):
         # Downgrade to medium if it's clearly not time-sensitive
