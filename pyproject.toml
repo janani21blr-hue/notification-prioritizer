@@ -5,5 +5,9 @@ description = "OpenEnv Notification Prioritizer"
 dependencies = [
     "fastapi",
     "uvicorn",
-    "pydantic"
+    "pydantic",
+    "openenv-core>=0.2.0"
 ]
+
+[project.scripts]
+server = "app:app"
