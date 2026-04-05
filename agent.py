@@ -26,28 +26,15 @@ def get_importance(obs):
         "security alert", "login attempt", "fraud"
     ]
     if any(k in message for k in critical_keywords):
-        return "high"
+        return "critical"
 
     # Mom/Dad calling via any app (WhatsApp calls count too)
     family_senders = ["mom", "dad", "amma", "appa", "mother", "father", "parents"]
     call_keywords  = ["calling you", "is calling", "call me", "called you"]
     if any(s in sender for s in family_senders) and \
        any(c in message for c in call_keywords):
-        return "high"
-
-    # --- LOW (check before high, so Swiggy promo doesn't get bumped up) ---
-    low_keywords = ["sale", "discount", "offer", "promo", "free", "deal",
-                    "30%", "off", "cashback", "coupon", "flat","%off"]
-    if any(w in message for w in low_keywords):
-        return "low"
-
-    low_apps = ["youtube", "netflix", "instagram", "spotify",
-            "swiggy", "zomato", "amazon", "flipkart"]
-    delivery_keywords = ["out for delivery", "arriving", "delivered", "order placed", "order confirmed"]
-    if any(a in app for a in low_apps):
-        if not any(d in message for d in delivery_keywords):
-            return "low"
-
+        return "critical"
+    
     # --- HIGH ---
     high_keywords = [
         "deadline", "urgent", "exam", "result", "interview",
@@ -66,6 +53,19 @@ def get_importance(obs):
                     "noreply@", "support@"]
     if any(s in sender for s in high_senders):
         return "high"
+
+    # --- LOW (check before high, so Swiggy promo doesn't get bumped up) ---
+    low_keywords = ["sale", "discount", "offer", "promo", "free", "deal",
+                    "30%", "off", "cashback", "coupon", "flat","%off"]
+    if any(w in message for w in low_keywords):
+        return "low"
+
+    low_apps = ["youtube", "netflix", "instagram", "spotify",
+            "swiggy", "zomato", "amazon", "flipkart"]
+    delivery_keywords = ["out for delivery", "arriving", "delivered", "order placed", "order confirmed"]
+    if any(a in app for a in low_apps):
+        if not any(d in message for d in delivery_keywords):
+            return "low"
 
     # --- MEDIUM (catch-all for social, friends, non-urgent) ---
     medium_keywords = ["are you coming", "what are you", "when are you",
