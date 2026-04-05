@@ -21,7 +21,7 @@ TASKS = {
 
 
 class ResetRequest(BaseModel):
-    msg : str
+    msg : Optional[str] = None
     task: Optional[str] = "mixed"
 
 
@@ -31,7 +31,7 @@ class StepRequest(BaseModel):
 
 # ---------------- RESET ----------------
 @app.post("/reset")
-def reset(req: ResetRequest):
+def reset(req: ResetRequest = ResetRequest()):
     global env_instance
     data = TASKS.get(req.task, TASKS["mixed"])
     env_instance = NotificationEnv(data=data)
