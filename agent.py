@@ -41,10 +41,11 @@ def get_importance(obs):
         return "low"
 
     low_apps = ["youtube", "netflix", "instagram", "spotify",
-                "swiggy", "zomato", "amazon", "flipkart"]
+            "swiggy", "zomato", "amazon", "flipkart"]
+    delivery_keywords = ["out for delivery", "arriving", "delivered", "order placed", "order confirmed"]
     if any(a in app for a in low_apps):
-        # Only low if it's promotional — generic app notifications still go through
-        return "low"
+        if not any(d in message for d in delivery_keywords):
+            return "low"
 
     # --- HIGH ---
     high_keywords = [
