@@ -1,3 +1,11 @@
+---
+title: Notification Prioritizer
+emoji: 🔔
+colorFrom: purple
+colorTo: blue
+sdk: docker
+pinned: false
+---
 🔔 Notification Prioritizer — OpenEnv Hackathon Submission
 
 A context-aware reinforcement learning environment where an agent learns to intelligently decide: notify, delay, or ignore — based on who's messaging, what they're saying, and what the user is doing right now.
