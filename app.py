@@ -21,6 +21,7 @@ TASKS = {
 
 
 class ResetRequest(BaseModel):
+    msg : str
     task: Optional[str] = "mixed"
 
 
