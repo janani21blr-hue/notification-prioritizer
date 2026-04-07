@@ -87,9 +87,10 @@ Choose one action: notify, delay, or ignore.
 # --- MAIN LOOP ---
 def main():
     client = OpenAI(
-        base_url=API_BASE_URL,
-        api_key=API_KEY
-    )
+    base_url=API_BASE_URL,
+    api_key=API_KEY or "placeholder"
+)
+    
 
     for task in TASKS:
         rewards = []
