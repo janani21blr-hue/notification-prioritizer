@@ -1,35 +1,36 @@
+# rewards.py
+
 REWARD_TABLE = {
-    ("notify", "important"): 0.99,
-    ("delay", "important"): 0.3,
-    ("ignore", "important"): 0.01,
+    ("notify", "important"): 0.95,
+    ("delay",  "important"): 0.30,
+    ("ignore", "important"): 0.05,
 
-    ("notify", "optional"): 0.7,
-    ("delay", "optional"): 0.8,
-    ("ignore", "optional"): 0.5,
+    ("notify", "optional"):  0.70,
+    ("delay",  "optional"):  0.85,
+    ("ignore", "optional"):  0.40,
 
-    ("notify", "ignore"): 0.01,
-    ("delay", "ignore"): 0.5,
-    ("ignore", "ignore"): 0.99,
+    ("notify", "junk"):      0.05,
+    ("delay",  "junk"):      0.50,
+    ("ignore", "junk"):      0.95,
 }
 
-
 def get_reward(action_mode, label, user_state):
-    # --- Step 1: Base reward ---
-    reward = REWARD_TABLE.get((action_mode, label), 0.5)
+    # Ensure label matches the table (maps 'ignore' to 'junk' if needed)
+    clean_label = "junk" if label in ["junk", "ignore", "low"] else label
+    
+    # Base reward with a safe 0.5 fallback
+    reward = REWARD_TABLE.get((action_mode, clean_label), 0.5)
 
-    # --- Step 2: Adjust based on user state ---
+    # Adjustments
     if user_state == "studying":
-        if action_mode == "notify" and label == "ignore":
-            reward -= 0.2
-        elif action_mode == "ignore" and label == "important":
-            reward -= 0.1
-
+        if action_mode == "notify" and clean_label == "junk":
+            reward -= 0.15
+        elif action_mode == "ignore" and clean_label == "important":
+            reward -= 0.10
     elif user_state == "relaxing":
-        if action_mode == "delay" and label == "optional":
-            reward += 0.1
+        if action_mode == "delay" and clean_label == "optional":
+            reward += 0.05
 
-    # --- Step 3: FINAL CLAMP (CRITICAL FOR PASSING) ---
-    reward = float(reward)
-    reward = max(0.01, min(0.99, reward))
-
-    return reward
+    # CRITICAL: Tight boundary enforcement
+    # This keeps rewards strictly in (0.01, 0.99)
+    return float(max(0.01, min(0.99, reward)))
