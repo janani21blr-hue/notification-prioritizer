@@ -1,8 +1,10 @@
+from typing import Optional
 from pydantic import BaseModel
 from typing import Literal
 
 class Action(BaseModel):
     mode: Literal["notify", "delay", "ignore"]
+    notification_id: Optional[int] = None  # add this
     
 
 class Observation(BaseModel):
@@ -10,7 +12,7 @@ class Observation(BaseModel):
     app: str
     message: str
     sender: str
-    user_state: Literal["studying", "relaxing"]
+    user_state: str
 
 class State(BaseModel):
     current_index: int
