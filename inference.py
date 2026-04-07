@@ -8,7 +8,7 @@ API_KEY = os.getenv("API_KEY")
 API_BASE_URL = os.getenv("API_BASE_URL")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 
-ENV_BASE_URL = "http://localhost:8000"
+ENV_BASE_URL = os.getenv("ENV_BASE_URL", "https://digitalpixie-notification-prioritizer.hf.space")
 TASK_NAME = os.getenv("TASK", "mixed")
 BENCHMARK = "notification-prioritizer"
 
