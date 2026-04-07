@@ -9,10 +9,10 @@ API_BASE_URL = os.getenv("API_BASE_URL")
 MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 
 ENV_BASE_URL = os.getenv("ENV_BASE_URL", "https://digitalpixie-notification-prioritizer.hf.space")
-TASK_NAME = os.getenv("TASK", "mixed")
 BENCHMARK = "notification-prioritizer"
 
 MAX_STEPS = 20
+TASKS = ["urgent", "mixed", "noisy"]
 
 SYSTEM_PROMPT = """
 You are a notification prioritization agent.
@@ -90,52 +90,54 @@ def main():
         base_url=API_BASE_URL,
         api_key=API_KEY
     )
-    rewards = []
-    steps_taken = 0
-    success = False
 
-    log_start(task=TASK_NAME, env=BENCHMARK, model=MODEL_NAME)
+    for task in TASKS:
+        rewards = []
+        steps_taken = 0
+        success = False
 
-    try:
-        reset_resp = requests.post(f"{ENV_BASE_URL}/reset", json={"task": TASK_NAME})
-        result = reset_resp.json()
-        obs = result["observation"]
-        done = result["done"]
+        log_start(task=task, env=BENCHMARK, model=MODEL_NAME)
 
-        step = 0
+        try:
+            reset_resp = requests.post(f"{ENV_BASE_URL}/reset", json={"task": task})
+            result = reset_resp.json()
+            obs = result["observation"]
+            done = result["done"]
 
-        while not done and step < MAX_STEPS:
-            step += 1
+            step = 0
+            while not done and step < MAX_STEPS:
+                step += 1
 
-            action = get_llm_action(client, obs)
-            action = action.strip().lower()
+                action = get_llm_action(client, obs)
+                action = action.strip().lower()
 
-            if action not in ["notify", "delay", "ignore"]:
-                action = "ignore"
+                if action not in ["notify", "delay", "ignore"]:
+                    action = "ignore"
 
-            step_resp = requests.post(
-                f"{ENV_BASE_URL}/step",
-                json={"action": action}
-            )
-            step_result = step_resp.json()
+                step_resp = requests.post(
+                    f"{ENV_BASE_URL}/step",
+                    json={"action": action}
+                )
+                step_result = step_resp.json()
 
-            obs = step_result["observation"]
-            reward = step_result["reward"]
-            done = step_result["done"]
-            error = step_result.get("error")
+                obs = step_result["observation"]
+                reward = float(step_result["reward"])
+                reward = max(0.01, min(0.99, reward))  # strictly open interval (0, 1)
+                done = step_result["done"]
+                error = step_result.get("error")
 
-            rewards.append(reward)
-            steps_taken = step
+                rewards.append(reward)
+                steps_taken = step
 
-            log_step(step, action, reward, done, error)
+                log_step(step, action, reward, done, error)
 
-        success = sum(rewards) >= 1
+            success = sum(rewards) >= 1
 
-    except Exception as e:
-        print(f"[DEBUG] Runtime error: {e}", flush=True)
+        except Exception as e:
+            print(f"[DEBUG] Runtime error: {e}", flush=True)
 
-    finally:
-        log_end(success=success, steps=steps_taken, rewards=rewards)
+        finally:
+            log_end(success=success, steps=steps_taken, rewards=rewards)
 
 
 if __name__ == "__main__":
