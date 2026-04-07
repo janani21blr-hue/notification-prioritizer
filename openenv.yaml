@@ -9,11 +9,11 @@ tasks:
 - name: noisy
   description: Mostly distracting notifications with some important ones hidden — agent must resist noise while catching critical alerts
 action_space:
-type: discrete
-actions:
-- notify
-- ignore
-- delay
+  type: discrete
+  actions:
+  - notify
+  - ignore
+  - delay
 observation_space:
   type: object
   properties:
