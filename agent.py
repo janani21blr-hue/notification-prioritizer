@@ -1,23 +1,3 @@
-import os
-from openai import OpenAI
-
-client = OpenAI(
-    base_url=os.environ["API_BASE_URL"],
-    api_key=os.environ["API_KEY"]
-)
-
-def call_llm(message):
-    try:
-        response = client.chat.completions.create(
-            model="gpt-4o-mini",
-            messages=[
-                {"role": "user", "content": message}
-            ],
-            max_tokens=5
-        )
-        return response.choices[0].message.content
-    except:
-        return None
 import random
 
 q_table = {}
@@ -36,7 +16,7 @@ ACTIONS = ["notify", "delay", "ignore"]
 def get_importance(obs):
     
     message = obs.get("message", "").lower()
-    _ = call_llm(message)
+   
     sender  = obs.get("sender",  "").lower()
     app     = obs.get("app", obs.get("App", "")).lower()
 
@@ -310,7 +290,7 @@ def update_q_table(state_key, action, reward):
 # ============================================================
 
 def agent_step(obs):
-    _ = call_llm(obs.get("message",""))
+   
     state_key  = get_state_key(obs)
     action     = choose_action(state_key, obs)
 
