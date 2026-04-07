@@ -276,4 +276,4 @@ This mirrors real-world challenges in **attention management, assistive AI, and 
 ## 👤 Author
 
 **Janani** — First-year CSE student, NMIT Bangalore
-Built solo as part of the OpenEnv Hackathon 2026
+Built solo as part of the OpenEnv Hackathon 2026.
