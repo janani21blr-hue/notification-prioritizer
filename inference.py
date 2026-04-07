@@ -4,9 +4,9 @@ from typing import List, Optional
 from openai import OpenAI
 
 # --- ENV VARIABLES ---
-API_KEY = os.getenv("HF_TOKEN") or os.getenv("API_KEY")
-API_BASE_URL = os.getenv("API_BASE_URL", "https://router.huggingface.co/v1")
-MODEL_NAME = os.getenv("MODEL_NAME", "Qwen/Qwen2.5-7B-Instruct")
+API_KEY = os.getenv("API_KEY")
+API_BASE_URL = os.getenv("API_BASE_URL")
+MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 
 ENV_BASE_URL = "http://localhost:8000"
 TASK_NAME = os.getenv("TASK", "mixed")
