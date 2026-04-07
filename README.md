@@ -5,6 +5,8 @@ colorFrom: purple
 colorTo: blue
 sdk: docker
 pinned: false
+tags:
+  - openenv
 ---
 🔔 Notification Prioritizer — OpenEnv Hackathon Submission
 
