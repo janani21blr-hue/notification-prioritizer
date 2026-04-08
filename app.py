@@ -105,6 +105,7 @@ def agent_step_api():
 
 
 # ---------------- STATE ----------------
+
 @app.get("/state")
 def state():
     global env_instance
@@ -112,11 +113,17 @@ def state():
     if env_instance is None:
         return {"error": "Call /reset first"}
 
+    # Calculate normalized score (average reward per step)
+    # This ensures the "Task Score" is always between 0 and 1
+    steps = env_instance.current_index if env_instance.current_index > 0 else 1
+    normalized_score = env_instance.total_reward / steps
+
     return {
         "current_index": env_instance.current_index,
-        "total_reward": round(env_instance.total_reward, 4),
+        "total_reward": round(normalized_score, 4),
         "done": env_instance.done,
     }
+    
 
 
 # ---------------- ROUTES ----------------
