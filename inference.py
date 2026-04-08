@@ -11,7 +11,7 @@ MODEL_NAME = os.getenv("MODEL_NAME", "gpt-4o-mini")
 ENV_BASE_URL = os.getenv("ENV_BASE_URL", "https://digitalpixie-notification-prioritizer.hf.space").rstrip("/")
 BENCHMARK = "notification-prioritizer"
 
-MAX_STEPS = 20
+MAX_STEPS = 18
 TASKS = ["urgent", "mixed", "noisy"]
 
 SYSTEM_PROMPT = """
