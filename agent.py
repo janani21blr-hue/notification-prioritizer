@@ -1,13 +1,35 @@
 import random
+import json
+import os
 
 q_table = {}
 episode_log = []
 
 ALPHA   = 0.2
 GAMMA   = 0.9
-EPSILON = 0.05
+EPSILON = 0.01
 
 ACTIONS = ["notify", "delay", "ignore"]
+
+Q_TABLE_PATH = "q_table.json"
+
+def load_q_table():
+    global q_table
+    if os.path.exists(Q_TABLE_PATH):
+        try:
+            with open(Q_TABLE_PATH, "r") as f:
+                q_table = json.load(f)
+        except Exception:
+            q_table = {}
+
+def save_q_table():
+    try:
+        with open(Q_TABLE_PATH, "w") as f:
+            json.dump(q_table, f)
+    except Exception:
+        pass
+
+load_q_table()
 
 # ============================================================
 # STEP 1: Classify message importance
@@ -30,14 +52,22 @@ def get_importance(obs):
     call_keywords  = ["calling you", "is calling", "call me", "called you"]
     if any(s in sender for s in family_senders) and any(c in message for c in call_keywords):
         return "critical"
-    
+
+    # --- TIME SENSITIVE (bump to high before low_apps check) ---
+    time_sensitive = [
+        "arriving in", "out for delivery", "expires in",
+        "expiring", "valid for", "minutes left", "last chance today"
+    ]
+    if any(t in message for t in time_sensitive):
+        return "high"
+
     # --- HIGH ---
     high_keywords = [
         "deadline", "urgent", "exam", "result", "interview",
         "assignment due", "due in", "shortlisted", "selected",
         "offer letter", "payment due", "verification", "internship",
         "job offer", "hall ticket", "admit card", "submission deadline",
-        "in 2 hours", "in 1 hour", "expires soon", "valid for","asap","immediately"
+        "in 2 hours", "in 1 hour", "expires soon", "asap", "immediately"
     ]
     if any(w in message for w in high_keywords):
         if any(t in message for t in ["tomorrow", "next week", "later", "no rush"]):
@@ -48,8 +78,13 @@ def get_importance(obs):
     if any(s in sender for s in high_senders):
         return "high"
 
+    # --- FINANCE APPS ---
+    finance_apps = ["gpay", "phonepe", "paytm", "bank", "zerodha", "groww", "cred"]
+    if any(a in app for a in finance_apps):
+        return "high"
+
     # --- LOW ---
-    low_keywords = ["sale", "discount", "offer", "promo", "free", "deal", "30%", "off", "cashback", "coupon", "flat","%off"]
+    low_keywords = ["sale", "discount", "offer", "promo", "free", "deal", "30%", "off", "cashback", "coupon", "flat", "%off"]
     if any(w in message for w in low_keywords):
         return "low"
 
@@ -146,7 +181,6 @@ def choose_action(state_key, obs):
 
 def get_agent_reward(action, importance, user_state):
     state_bucket = get_user_state_bucket(user_state)
-    # Clamp the lookup to be doubly safe
     raw_reward = REWARD_TABLE.get((importance, state_bucket, action), 0.5)
     return float(max(0.01, min(0.99, raw_reward)))
 
@@ -156,6 +190,7 @@ def update_q_table(state_key, action, reward):
     old_val = q_table[state_key][action]
     best_next = max(q_table[state_key].values())
     q_table[state_key][action] = old_val + ALPHA * (reward + GAMMA * best_next - old_val)
+    save_q_table()
 
 def agent_step(obs):
     state_key  = get_state_key(obs)
