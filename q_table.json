@@ -1,1 +1,1 @@
-{"low|focused": {"notify": 0.0, "delay": 0.0, "ignore": 0.39204000000000006}}
+{"low|focused": {"notify": 0.0, "delay": 0.0, "ignore": 0.768555216}, "medium|free": {"notify": 0.5821992, "delay": 0.0, "ignore": 0.0}, "medium|focused": {"notify": 0.0, "delay": 0.39204000000000006, "ignore": 0.0}, "critical|free": {"notify": 0.198, "delay": 0.0, "ignore": 0.0}, "high|free": {"notify": 0.39204000000000006, "delay": 0.0, "ignore": 0.0}, "low|free": {"notify": 0.0, "delay": 0.0, "ignore": 0.39204000000000006}, "critical|focused": {"notify": 0.198, "delay": 0.0, "ignore": 0.0}}

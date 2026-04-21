@@ -1,19 +1,13 @@
 name: notification-prioritizer
 version: "1.0"
-description: AI environment for prioritizing notifications based on importance and user context
+description: AI environment for prioritizing notifications with a Focus Budget system.
 tasks:
   - name: urgent
-    description: Only important notifications – agent must maximize notify actions
   - name: mixed
-    description: Mixed real-world notifications – agent must balance all three actions
   - name: noisy
-    description: Mostly distracting notifications with some important ones hidden – agent must resist noise while catching critical alerts
 action_space:
   type: discrete
-  actions:
-    - notify
-    - ignore
-    - delay
+  actions: [notify, ignore, delay]
 observation_space:
   type: object
   properties:
@@ -22,14 +16,10 @@ observation_space:
     message: string
     sender: string
     user_state: string
-  description: >
-    user_state affects reward - penalties apply for junk during studying,
-    bonus for delaying optional during relaxing
+    current_focus: float
+    is_user_annoyed: boolean
 reward:
   type: float
   range: [0.01, 0.99]
-  description: >
-    Based on action and label pair. user_state applies small modifiers.
-    No negative rewards.
 max_steps: 18
 entry_point: env:NotificationEnv

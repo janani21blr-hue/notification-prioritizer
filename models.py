@@ -1,25 +1,20 @@
+from pydantic import BaseModel, Field
 from typing import Optional
-from pydantic import BaseModel
-from typing import Literal
 
-class Reward(BaseModel):
-    value: float
-
-class Action(BaseModel):
-    mode: Literal["notify", "delay", "ignore"]
-    notification_id: Optional[int] = None  # add this
-    
-
-class Observation(BaseModel):
+class NotificationObservation(BaseModel):
     id: int
     app: str
     message: str
     sender: str
     user_state: str
+    current_focus: float = Field(..., description="User's remaining attention budget (0.0 to 1.0)")
+    is_user_annoyed: bool = Field(..., description="True if focus is below 0.3")
 
-class State(BaseModel):
-    current_index: int
-    total_reward: float
-    done: bool
+class NotificationAction(BaseModel):
+    mode: str = Field(..., pattern="^(notify|delay|ignore)$")
+
+class Reward(BaseModel):
+    value: float
+    reason: str
 
 
