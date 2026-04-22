@@ -14,11 +14,19 @@ def get_reward(action_mode, label, user_state, focus_level):
 
     # 2. Focus Penalty (The "Innovation" logic)
     if focus_level < 0.3 and action_mode == "notify":
-        reward -= 0.4 
-    
+        if clean_label == "important":
+            # Small penalty: emergencies break focus, but it's necessary
+            reward -= 0.1 
+        else:
+            # Massive penalty: do not break deep focus for junk/optional stuff
+            reward -= 0.5 
+
     # 3. Contextual Adjustment
-    if user_state == "studying" and action_mode == "notify" and clean_label != "important":
-        reward -= 0.2
+    if user_state == "studying" and action_mode == "notify":
+        if clean_label == "junk":
+            reward -= 0.4 # Brutal penalty for spam while studying
+        elif clean_label == "optional":
+            reward -= 0.2 # Mild penalty for social stuff while studying
 
     # 4. OpenEnv Boundary Enforcement (Must be strictly between 0 and 1)
     return float(max(0.01, min(0.99, reward)))

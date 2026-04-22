@@ -1,79 +1,53 @@
 # inference.py
-import os
-import time
 import requests
-from typing import List, Optional
-from openai import OpenAI
-from dotenv import load_dotenv
+import os
 
-load_dotenv()
+MODEL_ID = "DigitalPixie/attention-guard-v2-brain-f16"
+HF_TOKEN = os.environ.get("HF_TOKEN", "")  # Set this in your env
 
-# --- CONFIG ---
-API_KEY = os.getenv("GROQ_API_KEY") or os.getenv("OPENAI_API_KEY")
-API_BASE_URL = os.getenv("API_BASE_URL", "https://api.groq.com/openai/v1")
-MODEL_NAME = os.getenv("MODEL_NAME", "llama-3.1-8b-instant")
-ENV_BASE_URL = os.getenv("ENV_BASE_URL", "http://localhost:8000").rstrip("/")
+API_URL = f"https://api-inference.huggingface.co/models/{MODEL_ID}"
 
-VALID_ACTIONS = {"notify", "delay", "ignore"}
+def classify_importance(app: str, sender: str, message: str, user_state: str) -> str:
+    prompt = f"""Classify this notification importance as one word only (critical/high/medium/low).
 
-SYSTEM_PROMPT = """You are an AI Attention Guard. 
-Decide if a notification should be shown NOW, DELAYED, or IGNORED.
-Consider the User's Focus Budget and Annoyance state.
-Output ONLY the word: notify, delay, or ignore."""
+App: {app}
+Sender: {sender}  
+Message: {message}
+User State: {user_state}
 
-# --- LLM LOGIC ---
-def get_llm_action(client: OpenAI, obs: dict) -> str:
+critical=emergency/OTP/bank, high=interview/offer/exam, medium=friends/social, low=promo/marketing
+
+Answer (one word):"""
+
     try:
-        focus = obs.get("current_focus", 1.0)
-        annoyed = obs.get("is_user_annoyed", False)
-        
-        prompt = (
-            f"User Focus: {int(focus*100)}% | Annoyed: {annoyed}\n"
-            f"App: {obs.get('app')} | Message: {obs.get('message')}\n"
-            "Action:"
+        headers = {"Authorization": f"Bearer {HF_TOKEN}"} if HF_TOKEN else {}
+        response = requests.post(
+            API_URL,
+            headers=headers,
+            json={"inputs": prompt, "parameters": {"max_new_tokens": 5, "return_full_text": False}},
+            timeout=10
         )
-
-        response = client.chat.completions.create(
-            model=MODEL_NAME,
-            messages=[
-                {"role": "system", "content": SYSTEM_PROMPT},
-                {"role": "user", "content": prompt},
-            ],
-            max_tokens=5,
-            temperature=0.0,
-        )
+        result = response.json()
         
-        raw = response.choices[0].message.content.strip().lower()
-        for action in VALID_ACTIONS:
-            if action in raw: return action
-        return "ignore"
+        if isinstance(result, list) and len(result) > 0:
+            text = result[0].get("generated_text", "").strip().lower()
+            for word in text.split():
+                if word in ["critical", "high", "medium", "low"]:
+                    return word
     except Exception as e:
-        print(f"LLM Error: {e}")
-        return "ignore"
+        print(f"HF API call failed: {e}")
+    
+    return _keyword_fallback(app, sender, message)
 
-# --- RUNNER ---
-def main():
-    client = OpenAI(base_url=API_BASE_URL, api_key=API_KEY)
-    for task in ["urgent", "mixed", "noisy"]:
-        print(f"\n--- Starting Task: {task} ---")
-        try:
-            r = requests.post(f"{ENV_BASE_URL}/reset", json={"task": task})
-            res = r.json()
-            obs = res.get("observation")
-            done = False
-            
-            while not done:
-                action = get_llm_action(client, obs)
-                # CRITICAL: We send 'mode' to match our models.py
-                step_r = requests.post(f"{ENV_BASE_URL}/step", json={"action": action})
-                step_res = step_r.json()
-                
-                obs = step_res.get("observation")
-                reward = step_res.get("reward")
-                done = step_res.get("done")
-                print(f"Action: {action} | Focus: {obs['current_focus'] if obs else 'End'} | Reward: {reward}")
-        except Exception as e:
-            print(f"Connection Error: {e}")
-
-if __name__ == "__main__":
-    main()
+def _keyword_fallback(app: str, sender: str, message: str) -> str:
+    msg = message.lower()
+    sender_l = sender.lower()
+    if any(k in msg for k in ["emergency", "urgent", "otp", "bank", "security"]):
+        return "critical"
+    if any(k in msg for k in ["interview", "offer", "exam", "deadline", "shortlisted"]):
+        return "high"
+    if any(k in msg for k in ["sale", "discount", "promo", "liked", "reel", "story"]):
+        return "low"
+    if sender_l in ["mom", "dad", "placement cell"]:
+        return "high"
+    return "medium"

@@ -1,20 +1,33 @@
-NOTIFICATIONS = [
-    {"id": 1,  "app": "Gmail",     "message": "Your exam hall ticket is ready. Download before 5 PM.", "sender": "college@nmit.ac.in",  "user_state": "studying",  "label": "important"},
-    {"id": 2,  "app": "Zomato",    "message": "50% off on your next order! Limited time only.",         "sender": "Zomato",              "user_state": "relaxing",  "label": "ignore"},
-    {"id": 3,  "app": "WhatsApp",  "message": "Hey can we reschedule study group to tomorrow?",         "sender": "Priya",               "user_state": "studying",  "label": "optional"},
-    {"id": 4,  "app": "Gmail",     "message": "Assignment submission deadline is in 2 hours.",           "sender": "prof@nmit.ac.in",     "user_state": "relaxing",  "label": "important"},
-    {"id": 5,  "app": "Swiggy",    "message": "Your order is out for delivery! Arriving in 10 mins.",   "sender": "Swiggy",              "user_state": "relaxing",  "label": "optional"},
-    {"id": 6,  "app": "WhatsApp",  "message": "Mom is calling you.",                                    "sender": "Mom",                 "user_state": "studying",  "label": "important"},
-    {"id": 7,  "app": "YouTube",   "message": "Your favourite channel just posted a new video!",        "sender": "YouTube",             "user_state": "studying",  "label": "ignore"},
-    {"id": 8,  "app": "Gmail",     "message": "Your internship application was shortlisted!",            "sender": "hr@company.com",      "user_state": "relaxing",  "label": "important"},
-    {"id": 9,  "app": "Swiggy",    "message": "Flat 30% off on pizza this weekend only.",               "sender": "Swiggy",              "user_state": "relaxing",  "label": "ignore"},
-    {"id": 10, "app": "WhatsApp",  "message": "Are you coming to the badminton match tomorrow?",        "sender": "Sneha",               "user_state": "relaxing",  "label": "optional"},
-    {"id": 11, "app": "Gmail",     "message": "Your bank OTP is 7823. Valid for 10 minutes.",           "sender": "bank@sbi.com",        "user_state": "relaxing",  "label": "important"},
-    {"id": 12, "app": "Instagram", "message": "priya_23 liked your photo.",                             "sender": "Instagram",           "user_state": "studying",  "label": "ignore"},
-    {"id": 13, "app": "WhatsApp",  "message": "Hostel gate closes at 10 PM today. Please be back.",     "sender": "Warden",              "user_state": "relaxing",  "label": "important"},
-    {"id": 14, "app": "Swiggy",    "message": "Your favourite restaurant is now open for orders!",      "sender": "Swiggy",              "user_state": "studying",  "label": "ignore"},
-    {"id": 15, "app": "Gmail",     "message": "Reminder: Viva exam tomorrow at 9 AM. Be prepared.",     "sender": "dept@nmit.ac.in",     "user_state": "relaxing",  "label": "important"},
-    {"id": 16, "app": "WhatsApp",  "message": "Did you watch that new series on Netflix?",              "sender": "Rahul",               "user_state": "studying",  "label": "optional"},
-    {"id": 17, "app": "Gmail",     "message": "Your library book return is due tomorrow.",               "sender": "library@nmit.ac.in",  "user_state": "relaxing",  "label": "optional"},
-    {"id": 18, "app": "WhatsApp",  "message": "Project meeting rescheduled to 3 PM today.",             "sender": "Team Lead",           "user_state": "studying",  "label": "important"},
+import random
+
+TEMPLATES = [
+    # CRITICAL (Weight: 30%)
+    ({"app": "WhatsApp", "sender": "Mom", "label": "important", "msgs": ["Pick up the phone", "Emergency call me"]}, 15),
+    ({"app": "Gmail", "sender": "Placement Cell", "label": "important", "msgs": ["Interview link attached", "Offer letter"]}, 15),
+    
+    # OPTIONAL (Weight: 30%)
+    ({"app": "WhatsApp", "sender": "Sneha", "label": "optional", "msgs": ["Badminton tomorrow?", "Lunch plans?"]}, 15),
+    ({"app": "Instagram", "sender": "Alex", "label": "optional", "msgs": ["Sent you a reel", "Liked your story"]}, 15),
+    
+    # JUNK (Weight: 40%)
+    ({"app": "Swiggy", "sender": "Promo", "label": "junk", "msgs": ["50% off pizza!", "Free delivery!"]}, 20),
+    ({"app": "Gmail", "sender": "Marketing", "label": "junk", "msgs": ["Clearance sale ends today"]}, 20)
 ]
+
+def generate_synthetic_data(count=50):
+    dataset = []
+    templates, weights = zip(*TEMPLATES)
+    for i in range(count):
+        # Programmatically select based on real-world weights
+        template = random.choices(templates, weights=weights, k=1)[0]
+        dataset.append({
+            "id": i,
+            "app": template["app"],
+            "sender": template["sender"],
+            "message": random.choice(template["msgs"]),
+            "label": template["label"],
+            "user_state": random.choice(["studying", "relaxing"])
+        })
+    return dataset
+
+NOTIFICATIONS = generate_synthetic_data(50)

@@ -4,3 +4,8 @@ uvicorn
 requests
 openai
 httpx
+streamlit
+transformers
+torch
+gymnasium
+pandas

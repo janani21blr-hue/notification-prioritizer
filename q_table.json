@@ -1,1 +1,92 @@
-{"low|focused": {"notify": 0.0, "delay": 0.0, "ignore": 0.768555216}, "medium|free": {"notify": 0.5821992, "delay": 0.0, "ignore": 0.0}, "medium|focused": {"notify": 0.0, "delay": 0.39204000000000006, "ignore": 0.0}, "critical|free": {"notify": 0.198, "delay": 0.0, "ignore": 0.0}, "high|free": {"notify": 0.39204000000000006, "delay": 0.0, "ignore": 0.0}, "low|free": {"notify": 0.0, "delay": 0.0, "ignore": 0.39204000000000006}, "critical|focused": {"notify": 0.198, "delay": 0.0, "ignore": 0.0}}
+{
+  "HIGH|critical|studying": {
+    "notify": 7.638283796952212,
+    "delay": 6.560383942015836,
+    "ignore": 6.129482540643702
+  },
+  "HIGH|low|relaxing": {
+    "notify": 6.346892212757367,
+    "delay": 6.654050978760667,
+    "ignore": 7.623695936455572
+  },
+  "HIGH|medium|studying": {
+    "notify": 6.281928342476281,
+    "delay": 7.5176027440082,
+    "ignore": 5.248091292717501
+  },
+  "HIGH|low|studying": {
+    "notify": 6.108354446617226,
+    "delay": 5.823066889324249,
+    "ignore": 7.579491140220336
+  },
+  "HIGH|critical|relaxing": {
+    "notify": 7.632233701357317,
+    "delay": 5.193730199395532,
+    "ignore": 6.2128840468847235
+  },
+  "MEDIUM|low|relaxing": {
+    "notify": 6.148052168563135,
+    "delay": 6.128917679384069,
+    "ignore": 7.4904773110301965
+  },
+  "MEDIUM|medium|relaxing": {
+    "notify": 6.073618809787407,
+    "delay": 7.234460341194126,
+    "ignore": 6.464361553339377
+  },
+  "MEDIUM|medium|studying": {
+    "notify": 5.819320853878156,
+    "delay": 7.2681361340711605,
+    "ignore": 6.250122260341515
+  },
+  "MEDIUM|critical|relaxing": {
+    "notify": 7.183998094081859,
+    "delay": 5.739259259820538,
+    "ignore": 6.046446327666299
+  },
+  "MEDIUM|low|studying": {
+    "notify": 5.573606108882141,
+    "delay": 5.096537980053913,
+    "ignore": 7.552281798316815
+  },
+  "LOW|critical|studying": {
+    "notify": 5.509724185582798,
+    "delay": 4.905190396879592,
+    "ignore": 5.0828724767145
+  },
+  "LOW|medium|relaxing": {
+    "notify": 6.0405838945706645,
+    "delay": 5.858443534322866,
+    "ignore": 6.244943445657478
+  },
+  "LOW|low|studying": {
+    "notify": 4.95486607684972,
+    "delay": 6.077214315531496,
+    "ignore": 5.717971875295604
+  },
+  "LOW|low|relaxing": {
+    "notify": 5.881946500763184,
+    "delay": 5.87053757285865,
+    "ignore": 6.115284032226361
+  },
+  "LOW|critical|relaxing": {
+    "notify": 6.473897427421723,
+    "delay": 5.4255680578087055,
+    "ignore": 5.054061607244047
+  },
+  "LOW|medium|studying": {
+    "notify": 5.500688233092097,
+    "delay": 5.951149227746608,
+    "ignore": 6.093898755676883
+  },
+  "HIGH|medium|relaxing": {
+    "notify": 6.20295749327355,
+    "delay": 6.15239321816175,
+    "ignore": 7.217898727892287
+  },
+  "MEDIUM|critical|studying": {
+    "notify": 6.891419856017131,
+    "delay": 5.561866048137176,
+    "ignore": 5.640787945762299
+  }
+}

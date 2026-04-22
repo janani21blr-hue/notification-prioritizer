@@ -1,24 +1,56 @@
 # baseline.py
-# baseline.py
 import random
 from env import NotificationEnv
-from data import NOTIFICATIONS
-from agent import agent_step
 
-def run_benchmark(task_name, data):
+def run_random_agent(data):
     env = NotificationEnv(data=data)
-    obs = env.reset()
+    obs, _ = env.reset()
     done = False
-    
-    print(f"\n--- Benchmark: {task_name} ---")
-    while not done:
-        # Pass the observation object to the agent
-        action_str, _ = agent_step(obs)
-        obs, reward, done = env.step(action_str)
-        print(f"Focus: {obs.current_focus if obs else '0'} | Action: {action_str} | Reward: {reward}")
-    
-    print(f"Total Reward for {task_name}: {round(env.total_reward, 2)}")
+    total_reward = 0.0
+    actions_taken = {"notify": 0, "delay": 0, "ignore": 0}
+    focus_history = []
 
-if __name__ == "__main__":
-    from tasks import task_mixed
-    run_benchmark("MIXED_TASK", task_mixed(NOTIFICATIONS))
+    while not done and obs is not None:
+        action = random.choice(["notify", "delay", "ignore"])
+        next_obs, reward, terminated, truncated, info = env.step(action)
+        total_reward += reward
+        actions_taken[action] += 1
+        focus_history.append(info["current_focus"])
+        obs = next_obs
+        done = terminated or truncated
+
+    return {
+        "total_reward": round(total_reward, 3),
+        "avg_reward": round(total_reward / max(len(focus_history), 1), 3),
+        "final_focus": round(focus_history[-1] if focus_history else 0.0, 2),
+        "avg_focus": round(sum(focus_history) / max(len(focus_history), 1), 3),
+        "actions": actions_taken,
+        "steps": len(focus_history),
+    }
+
+def run_trained_agent(data):
+    from agent import choose_action
+    env = NotificationEnv(data=data)
+    obs, _ = env.reset()
+    done = False
+    total_reward = 0.0
+    actions_taken = {"notify": 0, "delay": 0, "ignore": 0}
+    focus_history = []
+
+    while not done and obs is not None:
+        action = choose_action(obs)
+        next_obs, reward, terminated, truncated, info = env.step(action)
+        total_reward += reward
+        actions_taken[action] += 1
+        focus_history.append(info["current_focus"])
+        obs = next_obs
+        done = terminated or truncated
+
+    return {
+        "total_reward": round(total_reward, 3),
+        "avg_reward": round(total_reward / max(len(focus_history), 1), 3),
+        "final_focus": round(focus_history[-1] if focus_history else 0.0, 2),
+        "avg_focus": round(sum(focus_history) / max(len(focus_history), 1), 3),
+        "actions": actions_taken,
+        "steps": len(focus_history),
+    }
